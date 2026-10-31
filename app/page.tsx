@@ -5,7 +5,7 @@ import { useLive, usePass } from "@/components/useStore";
 import { CITIES } from "@/lib/samples";
 
 export default function Home() {
-  const { venues, ready, mode } = useLive();
+  const { venues, ready, mode, error } = useLive();
   const [pass] = usePass();
   const [city, setCity] = useState<string>("Bengaluru");
   useEffect(() => {
@@ -21,6 +21,8 @@ export default function Home() {
   return (
     <>
       {mode === "demo" && <div className="banner info">Demo mode: data stays on this device. Connect Supabase to go live.</div>}
+      {mode === "supabase" && error && <div className="banner warn">Live sync is off. {error}</div>}
+      {mode === "supabase" && ready && !error && <div className="banner ok">Live. Bookings sync to every desk and phone.</div>}
       <section className="card">
         <span className="label">Your city</span>
         <div className="row">

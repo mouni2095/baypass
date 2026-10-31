@@ -16,6 +16,8 @@ export interface BookInput {
 
 export interface Store {
   readonly mode: "supabase" | "demo";
+  /** Last connection or query problem, in plain words, or null when healthy. */
+  lastError?: string | null;
   listVenues(): Promise<Venue[]>;
   saveVenue(v: Venue): Promise<void>;
   deleteVenue(id: string): Promise<void>;
@@ -49,9 +51,15 @@ class SupabaseStore implements Store {
   constructor(url: string, key: string) {
     this.sb = createClient(url, key);
   }
+  lastError: string | null = null;
   async listVenues() {
     const { data, error } = await this.sb.from("venues").select("*").order("created_at");
-    if (error) throw error;
+    if (error) {
+      this.lastError = `Database: ${error.message}`;
+      console.warn("venues", error);
+      return [...SAMPLE_VENUES];
+    }
+    this.lastError = null;
     return [...(data as VenueRow[]).map(toVenue), ...SAMPLE_VENUES];
   }
   async saveVenue(v: Venue) {

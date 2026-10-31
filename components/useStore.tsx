@@ -11,16 +11,23 @@ export function useLive(venueId?: string | null) {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [ready, setReady] = useState(false);
   const [mode, setMode] = useState<"supabase" | "demo" | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     const s = storeRef.current!;
     try {
-      const [vs, bs] = await Promise.all([s.listVenues(), s.listBookings(venueId ?? undefined)]);
+      const vs = await s.listVenues();
       setVenues(vs);
-      setBookings(bs);
-      if (venueId) setOcc(await s.getOccupancy(venueId));
+      try {
+        setBookings(await s.listBookings(venueId ?? undefined));
+        if (venueId) setOcc(await s.getOccupancy(venueId));
+      } catch (e) {
+        console.warn("bookings/occupancy", e);
+      }
+      setError(s.lastError ?? null);
     } catch (e) {
       console.warn("refresh failed", e);
+      setError(e instanceof Error ? e.message : "Could not reach the database.");
     } finally {
       setReady(true);
     }
@@ -36,7 +43,7 @@ export function useLive(venueId?: string | null) {
     return off;
   }, [refresh]);
 
-  return { store: storeRef.current ?? getStore(), venues, occ, bookings, ready, mode, refresh };
+  return { store: storeRef.current ?? getStore(), venues, occ, bookings, ready, mode, error, refresh };
 }
 
 /** The driver's own pass, kept on this phone so it opens with no signal. */
