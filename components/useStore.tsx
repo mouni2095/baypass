@@ -10,7 +10,7 @@ export function useLive(venueId?: string | null) {
   const [occ, setOcc] = useState<Occupancy>({});
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [ready, setReady] = useState(false);
-  const [mode, setMode] = useState<"supabase" | "demo">("demo");
+  const [mode, setMode] = useState<"supabase" | "demo" | null>(null);
 
   const refresh = useCallback(async () => {
     const s = storeRef.current!;
