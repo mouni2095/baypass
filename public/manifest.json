@@ -1,0 +1,12 @@
+{
+  "name": "BayPass",
+  "short_name": "BayPass",
+  "description": "Know your parking slot before you reach the basement.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eef1f6",
+  "theme_color": "#1c4fb8",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
